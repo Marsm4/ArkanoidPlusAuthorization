@@ -93,7 +93,20 @@ public class AuthController : ControllerBase
 
         return Ok(new { Coins = user.Coins });
     }
+    [HttpGet("user-skins")]
+    public async Task<IActionResult> GetUserSkins(string email)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserSkins)
+            .ThenInclude(us => us.Skin)
+            .FirstOrDefaultAsync(u => u.Email == email);
 
+        if (user == null)
+            return NotFound("User not found");
+
+        var userSkins = user.UserSkins.Select(us => us.Skin).ToList();
+        return Ok(userSkins);
+    }
     private string GenerateJwtToken(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
