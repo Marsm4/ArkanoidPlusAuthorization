@@ -94,12 +94,12 @@ public class AuthController : ControllerBase
         return Ok(new { Coins = user.Coins });
     }
     [HttpGet("user-skins")]
-    public async Task<IActionResult> GetUserSkins(string email)
+    public async Task<IActionResult> GetUserSkins(int userId)
     {
         var user = await _context.Users
             .Include(u => u.UserSkins)
             .ThenInclude(us => us.Skin)
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
             return NotFound("User not found");
